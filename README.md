@@ -2,6 +2,7 @@
 
 An intelligent AI-powered chatbot built using Django (backend) and React (frontend), enhanced with modern NLP techniques and scalable architecture.
 
+
 🚀 Features
 
 💬 Real-time chatbot interaction
@@ -20,6 +21,7 @@ An intelligent AI-powered chatbot built using Django (backend) and React (fronte
 
 🏗️ Tech Stack
 
+
 Frontend:
 
 React.js
@@ -37,11 +39,13 @@ Python
 OpenAI / NLP Models
 Embeddings (RAG)
 
+
 🔗 API Endpoints
 
 POST /api/chat/ → Send user message
 
 GET /api/history/ → Get chat history
+
 
 🧠 How It Works
 
