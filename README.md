@@ -2,6 +2,7 @@
 
 An intelligent AI-powered chatbot built using Django (backend) and React (frontend), enhanced with modern NLP techniques and scalable architecture.
 
+url : https://ai-chatbot-django-react.vercel.app/
 
 🚀 Features
 
