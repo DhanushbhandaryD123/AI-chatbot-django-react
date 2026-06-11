@@ -28,7 +28,7 @@ function UploadPDF() {
     setMessage("");
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/upload/", {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/upload/`, {
         method: "POST",
         body: formData,
       });
