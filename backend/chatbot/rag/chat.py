@@ -1,34 +1,41 @@
-from langchain_openai import ChatOpenAI
-from langchain.chains import RetrievalQA
+from chatbot.rag import loader
+from langchain_groq import ChatGroq
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
 
-# vectorstore will be created in embedding.py and reused
-from .embedding import get_vectorstore
+# Define the Prompt Template
+system_prompt = (
+    "You are an assistant for question-answering tasks. "
+    "Use the following pieces of retrieved context to answer "
+    "the question. If you don't know the answer, say that you "
+    "don't know. Use three sentences maximum and keep the "
+    "answer concise."
+    "\n\n"
+    "{context}"
+)
 
+QA_PROMPT = ChatPromptTemplate.from_messages(
+    [
+        ("system", system_prompt),
+        ("human", "{input}"),
+    ]
+)
 
-def chat_with_pdf(question: str) -> str:
-    """
-    Takes a user question and returns answer from PDF using RAG
-    """
+def chat_with_pdf(question):
+    # Check if the vectorstore is initialized in the loader
+    if loader.vectorstore is None:
+        return "No documents indexed. Please upload a PDF and wait for indexing."
 
-    # Load vectorstore (FAISS / Chroma etc.)
-    vectorstore = get_vectorstore()
+    # Initialize the LLM (free Groq-hosted Llama model)
+    llm = ChatGroq(model="llama-3.1-8b-instant", temperature=0)
 
-    if vectorstore is None:
-        return "No document uploaded yet."
+    # Create the retriever from the existing FAISS vectorstore
+    retriever = loader.vectorstore.as_retriever(search_kwargs={"k": 3})
 
-    # LLM (API key is read automatically from environment variable)
-    llm = ChatOpenAI(
-        model="gpt-3.5-turbo",
-        temperature=0
-    )
+    # Retrieve relevant chunks and combine them into the context
+    docs = retriever.invoke(question)
+    context = "\n\n".join(doc.page_content for doc in docs)
 
-    # Retrieval-based QA
-    qa_chain = RetrievalQA.from_chain_type(
-        llm=llm,
-        retriever=vectorstore.as_retriever(),
-        return_source_documents=False
-    )
-
-    result = qa_chain.invoke({"query": question})
-
-    return result["result"]
+    # Build and invoke the LCEL chain (prompt -> llm -> string output)
+    chain = QA_PROMPT | llm | StrOutputParser()
+    return chain.invoke({"context": context, "input": question})

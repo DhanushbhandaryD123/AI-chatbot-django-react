@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+backend/venv/
+db.sqlite3
+
+# Environment variables (contain secrets)
+.env
+backend/.env
+
+# Django media / uploads
+backend/media/
+backend/uploads/
+uploads/
+
+# Node / React
+frontend/node_modules/
+frontend/build/
+
+# OS / editor
+.DS_Store
+Thumbs.db
